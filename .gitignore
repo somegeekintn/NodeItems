@@ -1,0 +1,5 @@
+# Xcode
+Resources
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
