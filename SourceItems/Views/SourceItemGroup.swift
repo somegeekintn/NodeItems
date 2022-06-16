@@ -13,7 +13,7 @@ struct SourceItemGroup<Item: SourceItem>: View {
     var item   : Item
 
     var body: some View {
-        if let childItems = item.children {
+        if let childItems = item.children, childItems.count > 0 {
             DisclosureGroup(
                 isExpanded: $isExpanded) {
                     ForEach(childItems) { childItem in

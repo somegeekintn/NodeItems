@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-extension IntSource {
-    var header  : some View { IntHeader(source: self) }
+extension Int {
+    public var header  : some View { IntHeader(value: self) }
 }
 
 struct IntHeader: View {
-    var source  : IntSource
+    var value  : Int
     
     var body: some View {
         VStack(alignment: .leading, spacing: 3.0) {
             Text("Header for IntSource")
-            Text(source.title)
+            Text(value.title)
         }
         .font(.subheadline)
     }
@@ -25,9 +25,9 @@ struct IntHeader: View {
 
 struct IntHeader_Previews: PreviewProvider {
     static var previews: some View {
-        IntHeader(source: IntSource(value: 27))
+        IntHeader(value: 27)
             .preferredColorScheme(.dark)
-        IntHeader(source: IntSource(value: 42))
+        IntHeader(value: 42)
             .preferredColorScheme(.light)
     }
 }

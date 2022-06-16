@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-extension IntSource {
-    var content : some View { IntContent(source: self) }
+extension Int {
+    public var content : some View { IntContent(value: self) }
 }
 
 struct IntContent: View {
-    var source  : IntSource
+    var value  : Int
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Value: \(source.value)")
+            Text("Value: \(value)")
                 .font(.headline)
             Divider()
             Text("Int Overview")
@@ -30,9 +30,9 @@ struct IntContent: View {
 
 struct IntContent_Previews: PreviewProvider {
     static var previews: some View {
-        ScrollView { IntContent(source: IntSource(value: 27)) }
+        ScrollView { IntContent(value: 27) }
             .preferredColorScheme(.dark)
-        ScrollView { IntContent(source: IntSource(value: 42)) }
+        ScrollView { IntContent(value: 42) }
             .preferredColorScheme(.light)
     }
 }

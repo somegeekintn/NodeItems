@@ -14,7 +14,6 @@ protocol SourceItemData {
     @ViewBuilder var header     : Self.Header { get }
     @ViewBuilder var content    : Self.Content { get }
 
-    var id              : String { get }
     var title           : String { get }
     var headerTitle     : String { get }
     var imageName       : String { get }
@@ -25,6 +24,14 @@ protocol SourceItemData {
 extension SourceItemData {
     var headerTitle     : String { title }
     var icon            : NSImage? { nil }
+
+    var header          : some View { Text("Unimplemented \(sourceType).header") }
+    var content         : some View { Text("Unimplemented \(sourceType).content") }
+    var sourceType      : String { "\(type(of: self))" }
+   
+    func with<Item: SourceItem>(@SourceBuilder children: () -> SourceContainer<Item>) -> (data: Self, items: [Item]) {
+        return (self, children().items)
+    }
 }
 
 extension Never: SourceItemData {

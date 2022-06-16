@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-extension StringSource {
-    var content : some View { StringContent(source: self) }
+extension String {
+    var content : some View { StringContent(value: self) }
 }
 
 struct StringContent: View {
-    var source  : StringSource
+    var value  : String
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Value: \(source.value)")
+            Text("Value: \(value)")
                 .font(.headline)
             Divider()
             Text("String Overview")
@@ -32,9 +32,9 @@ struct StringContent: View {
 
 struct StringContent_Previews: PreviewProvider {
     static var previews: some View {
-        ScrollView { StringContent(source: StringSource(value: "hello")) }
+        ScrollView { StringContent(value: "hello") }
             .preferredColorScheme(.dark)
-        ScrollView { StringContent(source: StringSource(value: "world")) }
+        ScrollView { StringContent(value: "world") }
             .preferredColorScheme(.light)
     }
 }

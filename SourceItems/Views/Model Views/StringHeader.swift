@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-extension StringSource {
-    var header  : some View { StringHeader(source: self) }
+extension String {
+    var header  : some View { StringHeader(value: self) }
 }
 
 struct StringHeader: View {
-    var source  : StringSource
+    var value  : String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 3.0) {
             Text("Header for StringSource")
-            Text(source.title)
+            Text(value.title)
         }
         .font(.subheadline)
     }
@@ -25,9 +25,9 @@ struct StringHeader: View {
 
 struct StringHeader_Previews: PreviewProvider {
     static var previews: some View {
-        StringHeader(source: StringSource(value: "hello"))
+        StringHeader(value: "hello")
             .preferredColorScheme(.dark)
-        StringHeader(source: StringSource(value: "world"))
+        StringHeader(value: "world")
             .preferredColorScheme(.light)
     }
 }

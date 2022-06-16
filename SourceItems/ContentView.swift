@@ -20,7 +20,7 @@ struct ContentView: View {
                     }
                     
                     if !toggle {
-                        ForEach(model.items1) {
+                        ForEach(model.itemAlt1.items) {
                             SourceItemGroup(item: $0)
                         }
                     }

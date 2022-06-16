@@ -7,16 +7,13 @@
 
 import SwiftUI
 
-struct IntSource: SourceItemData {
-    var id              : String { title }
-    var value           : Int
-    var title           : String { "Int: \(value)" }
+extension Int: SourceItemData {
+    var title           : String { "Int: \(self)" }
     var headerTitle     : String { "SourceItemData Type: \(type(of: self))" }
     var imageName       : String { "number" }
     var imageStyle      : SourceImage.Style {
                             let colors : [Color] = [.red, .yellow, .green, .cyan, .blue, .purple]
                             
-                            return .symbol(color: value < colors.endIndex ? colors[value] : .primary)
+                            return .symbol(color: colors[self % colors.endIndex])
                         }
 }
-
