@@ -27,6 +27,7 @@
 		C991053D28590DC70063C101 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C991053C28590DC70063C101 /* Assets.xcassets */; };
 		C991054028590DC70063C101 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C991053F28590DC70063C101 /* Preview Assets.xcassets */; };
 		C991054828590EC60063C101 /* SourceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C991054728590EC60063C101 /* SourceItem.swift */; };
+		C9D73C22285C89BE0044A279 /* SourceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D73C21285C89BE0044A279 /* SourceBuilder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		C991053F28590DC70063C101 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C991054128590DC70063C101 /* SourceItems.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SourceItems.entitlements; sourceTree = "<group>"; };
 		C991054728590EC60063C101 /* SourceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceItem.swift; sourceTree = "<group>"; };
+		C9D73C21285C89BE0044A279 /* SourceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				C96255192859F84700D36CD9 /* SampleModel.swift */,
+				C9D73C21285C89BE0044A279 /* SourceBuilder.swift */,
 				C991054728590EC60063C101 /* SourceItem.swift */,
 				C962551B2859F88A00D36CD9 /* SourceItemData.swift */,
 				C9625520285A09A900D36CD9 /* SourceImage.swift */,
@@ -225,6 +228,7 @@
 				C991053B28590DC40063C101 /* ContentView.swift in Sources */,
 				C962551C2859F88A00D36CD9 /* SourceItemData.swift in Sources */,
 				C96255182859F3C300D36CD9 /* SourceItemGroup.swift in Sources */,
+				C9D73C22285C89BE0044A279 /* SourceBuilder.swift in Sources */,
 				C9625533285A328A00D36CD9 /* StringSource.swift in Sources */,
 				C9625527285A201100D36CD9 /* SourceItemContent.swift in Sources */,
 				C962552F285A309200D36CD9 /* IntSource.swift in Sources */,
