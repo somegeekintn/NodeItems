@@ -13,7 +13,7 @@ struct SourceItemLabel<Item: SourceItem>: View {
     var body: some View {
         Label(
             title: { Text(item.title) },
-            icon: { SourceItemImage(styledImage: item.image) }
+            icon: { SourceItemImage(imageDesc: item.imageDesc) }
         )
     }
 }

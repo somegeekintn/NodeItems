@@ -35,7 +35,7 @@ struct SourceItemContent<Item: SourceItem>: View {
                 .background(.background)
             }
             .overlay(
-                SourceItemImage(styledImage: item.image, isLabelImage: false)
+                SourceItemImage(imageDesc: item.imageDesc, isLabelImage: false)
                     .padding([.top, .trailing], 24.0),
                 alignment: .topTrailing
             )

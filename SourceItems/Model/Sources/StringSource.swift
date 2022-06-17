@@ -10,6 +10,5 @@ import SwiftUI
 extension String: SourceItemData {
     var title           : String { "String: \(self)" }
     var headerTitle     : String { "SourceItemData Type: \(type(of: self))" }
-    var imageName       : String { "textformat.abc" }
-    var imageStyle      : SourceImage.Style { .symbol(color: .primary) }
+    var imageDesc       : SourceImageDesc { .symbol(systemName: "textformat.abc") }
 }

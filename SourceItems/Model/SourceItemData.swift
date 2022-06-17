@@ -16,14 +16,13 @@ protocol SourceItemData {
 
     var title           : String { get }
     var headerTitle     : String { get }
-    var imageName       : String { get }
-    var imageStyle      : SourceImage.Style { get }
-    var icon            : NSImage? { get }
+    var imageDesc       : SourceImageDesc { get }
 }
 
 extension SourceItemData {
     var headerTitle     : String { title }
     var icon            : NSImage? { nil }
+    var imageDesc       : SourceImageDesc { .symbol() }
 
     var header          : some View { Text("Unimplemented \(sourceType).header") }
     var content         : some View { Text("Unimplemented \(sourceType).content") }
@@ -34,9 +33,14 @@ extension SourceItemData {
     }
 }
 
+enum SourceImageDesc {
+    case icon(nsImage: NSImage)
+    case symbol(systemName: String = "questionmark.circle", color: Color = .primary)
+}
+
 extension Never: SourceItemData {
     var headerTitle     : String { fatalError () }
-    var imageStyle      : SourceImage.Style { fatalError () }
+    var imageDesc       : SourceImageDesc { SourceImageDesc.symbol(systemName: "exclamationmark.octagon", color: .red) }
     var header          : some View { Text("Error: Never SourceItemData type cannot provide header") }
     var content         : some View { Text("Error: Never SourceItemData type cannot provide content") }
 }

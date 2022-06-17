@@ -17,18 +17,13 @@ protocol SourceItem: Identifiable {
 }
 
 extension SourceItem {
-    var customImageName : String? { nil }
+    var customImgDesc   : SourceImageDesc? { nil }
 
     var title           : String { data.title }
     var headerTitle     : String { data.headerTitle }
     var header          : some View { data.header }
     var content         : some View { data.content }
-    var imageName       : String { customImageName ?? data.imageName }
-    var image           : SourceImage {
-                            (data.icon.map { Image(nsImage: $0) } ??
-                                Image(systemName: imageName))
-                                    .with(style: data.imageStyle)
-                        }
+    var imageDesc       : SourceImageDesc { customImgDesc ?? data.imageDesc }
 }
 
 struct SourceItemVal<Model: SourceItemData, Child: SourceItem>: SourceItem {
