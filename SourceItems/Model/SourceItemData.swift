@@ -21,7 +21,6 @@ protocol SourceItemData {
 
 extension SourceItemData {
     var headerTitle     : String { title }
-    var icon            : NSImage? { nil }
     var imageDesc       : SourceImageDesc { .symbol() }
 
     var header          : some View { Text("Unimplemented \(sourceType).header") }
