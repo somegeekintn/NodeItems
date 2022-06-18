@@ -13,7 +13,7 @@ protocol SourceList {
     var items       : [Item] { get }
 }
 
-struct SourceListVal<Item: SourceItem> : SourceList {
+struct SourceRoot<Item: SourceItem> : SourceList {
     let items       : [Item]
 }
 
@@ -48,16 +48,24 @@ struct SourceBuilder {
     }
 
     // Single SourceContainer
-    static func buildExpression<Item: SourceItem>(_ container: SourceListVal<Item>) -> [Item] {
+    static func buildExpression<Item: SourceItem>(_ container: SourceRoot<Item>) -> [Item] {
         container.items
     }
 
     static func buildArray<Item: SourceItem>(_ components: [[Item]]) -> [Item] {
-        return components.flatMap { $0 }
+        components.flatMap { $0 }
     }
     
-    static func buildFinalResult<Item: SourceItem>(_ items: [Item]) -> SourceListVal<Item> {
-        return SourceListVal<Item>(items: items)
+    static func buildEither<Item: SourceItem>(first component: [Item]) -> [Item] {
+        component
+    }
+    
+    static func buildEither<Item: SourceItem>(second component: [Item]) -> [Item] {
+        component
+    }
+    
+    static func buildFinalResult<Item: SourceItem>(_ items: [Item]) -> SourceRoot<Item> {
+        return SourceRoot<Item>(items: items)
     }
 }
 
@@ -97,7 +105,7 @@ struct TestBuilder {
         }
     }
     
-    func testBuild<Item: SourceItem>(_ msg: String, @SourceBuilder children: () -> SourceListVal<Item>) {
+    func testBuild<Item: SourceItem>(_ msg: String, @SourceBuilder children: () -> SourceRoot<Item>) {
         print("\(msg): \(children().items)")
     }
 }

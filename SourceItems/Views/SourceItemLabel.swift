@@ -19,11 +19,12 @@ struct SourceItemLabel<Item: SourceItem>: View {
 }
 
 struct SourceItemLabel_Previews: PreviewProvider {
-    static var sampleItem1 = SampleModel().items1[0]
-    static var sampleItem2 = SampleModel().items2[0]
+    static var sampleItems = SampleModel().sourceItemsA()[0...1]
 
     static var previews: some View {
-        SourceItemLabel(item: sampleItem1)
-        SourceItemLabel(item: sampleItem2)
+        ForEach(sampleItems) { item in
+            SourceItemLabel(item: item)
+            SourceItemLabel(item: item)
+        }
     }
 }

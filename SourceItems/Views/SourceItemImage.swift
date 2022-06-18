@@ -42,13 +42,12 @@ struct SourceItemImage: View {
 }
 
 struct SourceItemImage_Previews: PreviewProvider {
-    static var sampleImage1 = SampleModel().items1[0].imageDesc
-    static var sampleImage2 = SampleModel().items2[0].imageDesc
+    static var sampleItems = SampleModel().sourceItemsA()[0...1]
 
     static var previews: some View {
-        SourceItemImage(imageDesc: sampleImage1)
-        SourceItemImage(imageDesc: sampleImage1, isLabelImage: false)
-        SourceItemImage(imageDesc: sampleImage2)
-        SourceItemImage(imageDesc: sampleImage2, isLabelImage: false)
+        ForEach(sampleItems) { item in
+            SourceItemImage(imageDesc: item.imageDesc)
+            SourceItemImage(imageDesc: item.imageDesc, isLabelImage: false)
+        }
     }
 }

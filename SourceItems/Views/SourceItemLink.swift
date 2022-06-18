@@ -22,7 +22,7 @@ struct SourceItemLink<Item: SourceItem>: View {
 }
 
 struct SourceItemLink_Previews: PreviewProvider {
-    static var sampleItem = SampleModel().items1[0]
+    static var sampleItem = SampleModel().sourceItemsA()[0]
 
     static var previews: some View {
         SourceItemLink(item: sampleItem)

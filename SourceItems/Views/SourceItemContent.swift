@@ -46,13 +46,14 @@ struct SourceItemContent<Item: SourceItem>: View {
 }
 
 struct SourceItemContent_Previews: PreviewProvider {
-    static var sampleItem1 = SampleModel().items1[0]
-    static var sampleItem2 = SampleModel().items2[0]
+    static var sampleItems = SampleModel().sourceItemsA()[0...1]
 
     static var previews: some View {
-        SourceItemContent(item: sampleItem1)
-            .preferredColorScheme(.dark)
-        SourceItemContent(item: sampleItem2)
-            .preferredColorScheme(.light)
+        ForEach(sampleItems) { item in
+            SourceItemContent(item: item)
+                .preferredColorScheme(.dark)
+            SourceItemContent(item: item)
+                .preferredColorScheme(.light)
+        }
     }
 }

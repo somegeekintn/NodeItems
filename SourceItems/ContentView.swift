@@ -9,25 +9,29 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var model   : SampleModel
-    @State var toggle           : Bool = false
     
     var body: some View {
         VStack {
             NavigationView {
                 List {
-                    Toggle(isOn: $toggle) {
-                        Text("Toggle").padding(.leading, 4.0)
-                    }
-                    
-                    if !toggle {
-                        ForEach(model.itemAlt1.items) {
-                            SourceItemGroup(item: $0)
+                    Menu {
+                        Picker("Variant", selection: $model.variant) {
+                            ForEach(SampleModel.Variant.allCases) { variant in
+                                Text(variant.title).tag(variant)
+                            }
                         }
+                        .pickerStyle(.inline)
+                    } label: {
+                        Label("Variant", systemImage: "slider.horizontal.3")
                     }
-                    else {
-                        ForEach(model.items2) {
-                            SourceItemGroup(item: $0)
-                        }
+
+                    switch model.multiRoot {
+                        case let .a(_, root):
+                            ForEach(root.items) { SourceItemGroup(item: $0) }
+                        case let .b(_, root):
+                            ForEach(root.items) { SourceItemGroup(item: $0) }
+                        case let .c(_, root):
+                            ForEach(root.items) { SourceItemGroup(item: $0) }
                     }
                 }
                 .frame(minWidth: 200)

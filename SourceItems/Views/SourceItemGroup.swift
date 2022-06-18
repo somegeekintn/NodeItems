@@ -30,7 +30,7 @@ struct SourceItemGroup<Item: SourceItem>: View {
 }
 
 struct SourceItemGroup_Previews: PreviewProvider {
-    static var sampleItem = SampleModel().items1[0]
+    static var sampleItem = SampleModel().sourceItemsA()[0]
 
     static var previews: some View {
         SourceItemGroup(item: sampleItem)

@@ -27,7 +27,7 @@ extension SourceItemData {
     var content         : some View { Text("Unimplemented \(sourceType).content") }
     var sourceType      : String { "\(type(of: self))" }
    
-    func with<Item: SourceItem>(@SourceBuilder children: () -> SourceListVal<Item>) -> (data: Self, items: [Item]) {
+    func with<Item: SourceItem>(@SourceBuilder children: () -> SourceRoot<Item>) -> (data: Self, items: [Item]) {
         return (self, children().items)
     }
 }
