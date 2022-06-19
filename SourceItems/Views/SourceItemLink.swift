@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct SourceItemLink<Item: SourceItem>: View {
+    @Binding var selection: UUID?
+
     var item   : Item
 
     var body: some View {
-        NavigationLink(
+        NavigationLink(tag: item.id, selection: $selection,
             destination: { SourceItemContent(item: item) },
             label: {
                 SourceItemLabel(item: item)
@@ -22,12 +24,13 @@ struct SourceItemLink<Item: SourceItem>: View {
 }
 
 struct SourceItemLink_Previews: PreviewProvider {
+    @State static var selection : UUID?
     static var sampleItem = SampleModel().sourceItemsA()[0]
 
     static var previews: some View {
-        SourceItemLink(item: sampleItem)
+        SourceItemLink(selection: $selection, item: sampleItem)
             .preferredColorScheme(.dark)
-        SourceItemLink(item: sampleItem)
+        SourceItemLink(selection: $selection, item: sampleItem)
             .preferredColorScheme(.light)
     }
 }

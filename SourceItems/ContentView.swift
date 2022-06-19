@@ -8,15 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var model   : SampleModel
+    @ObservedObject var model : SampleModel
     
     var body: some View {
         VStack {
             NavigationView {
                 List {
+                    Divider()
+
                     Menu {
                         Picker("Variant", selection: $model.variant) {
-                            ForEach(SampleModel.Variant.allCases) { variant in
+                            ForEach(SampleModel.Variant.allCases.dropFirst()) { variant in
                                 Text(variant.title).tag(variant)
                             }
                         }
@@ -24,14 +26,24 @@ struct ContentView: View {
                     } label: {
                         Label("Variant", systemImage: "slider.horizontal.3")
                     }
+                    
+                    Divider()
 
-                    switch model.multiRoot {
-                        case let .a(_, root):
-                            ForEach(root.items) { SourceItemGroup(item: $0) }
+                    switch model.filteredRoot {
+                        case let .a(_, title):
+                            Text(title)
                         case let .b(_, root):
-                            ForEach(root.items) { SourceItemGroup(item: $0) }
+                            ForEach(root.items) {
+                                SourceItemGroup(selection: $model.selection, item: $0)
+                            }
                         case let .c(_, root):
-                            ForEach(root.items) { SourceItemGroup(item: $0) }
+                            ForEach(root.items) {
+                                SourceItemGroup(selection: $model.selection, item: $0)
+                            }
+                        case let .d(_, root):
+                            ForEach(root.items) {
+                                SourceItemGroup(selection: $model.selection, item: $0)
+                            }
                     }
                 }
                 .frame(minWidth: 200)
@@ -41,6 +53,7 @@ struct ContentView: View {
                     Text("SourceItems")
                 }
             }
+            .searchable(text: $model.filter, placement: .sidebar)
         }
     }
 }

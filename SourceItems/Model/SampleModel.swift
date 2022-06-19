@@ -7,19 +7,24 @@
 
 import SwiftUI
 
-enum OneOf<A, B, C>: Identifiable {
-    case a(id: String = UUID().uuidString, A)
-    case b(id: String = UUID().uuidString, B)
-    case c(id: String = UUID().uuidString, C)
+enum OneOf<A, B, C, D>: Identifiable {
+    case a(id: UUID = UUID(), A)
+    case b(id: UUID = UUID(), B)
+    case c(id: UUID = UUID(), C)
+    case d(id: UUID = UUID(), D)
     
-    var id      :  String {
+    var id      :  UUID {
         switch self {
             case let .a(id, _):     return id
             case let .b(id, _):     return id
             case let .c(id, _):     return id
+            case let .d(id, _):     return id
         }
     }
 }
+
+// Named SampleModel and contains model but also aspects of presentation
+// This would be broken out in a "real world" situation
 
 class SampleModel: ObservableObject {
     typealias   IntItem             = SourceItemVal<Int, Never>
@@ -28,11 +33,13 @@ class SampleModel: ObservableObject {
     typealias   StringInt           = SourceItemVal<String, IntItem>
     typealias   SymbolStringInt     = SourceItemVal<SymbolSource, StringInt>
     typealias   MultiRoot           = OneOf<
+                                        String,
                                         SourceRoot<SymbolStringInt>,
                                         SourceRoot<IntString>,
                                         SourceRoot<StringInt>>
 
     enum Variant: Int, CaseIterable, Identifiable {
+        case v0
         case v1
         case v2
         case v3
@@ -40,6 +47,7 @@ class SampleModel: ObservableObject {
         var id      : Int { rawValue }
         var title   : String {
             switch self {
+                case .v0: return "Placeholder"
                 case .v1: return "Symbol / String / Int"
                 case .v2: return "Int / String"
                 case .v3: return "String / Int"
@@ -47,15 +55,41 @@ class SampleModel: ObservableObject {
         }
     }
     
-    @Published var variant  = Variant.v1
+    @Published var variant      = Variant.v0 { didSet { multiRoot = rootFor(variant: variant) } }
+    @Published var filter       = ""
 
-    var multiRoot           : MultiRoot { rootFor(variant: variant) }
+    // Note: sometimes filtering clears the selection and sometimes not. Sometimes
+    // the selection remains even if the items has been filtered out. <thinking face>
+    @Published var selection    : UUID? {
+        didSet {
+            if let sel = selection { print("New \(sel.uuidString)") }
+            else { print("No selection") }
+        }
+    }
+    
+    // Added placeholder variant because we don't want multiRoot to be a computed value
+    // Instead we want the filtered items to be the identified the same as the unfiltered
+    // ones.
+    var multiRoot           : MultiRoot = MultiRoot.a("Placeholder")
+    var filteredRoot        : MultiRoot {
+        switch multiRoot {
+            case .a:                return multiRoot
+            case let .b(_, root):   return .b(id: multiRoot.id, root.filtered(matching: filter))
+            case let .c(_, root):   return .c(id: multiRoot.id, root.filtered(matching: filter))
+            case let .d(_, root):   return .d(id: multiRoot.id, root.filtered(matching: filter))
+        }
+    }
+    
+    init() {
+        variant = Variant.v1
+    }
     
     func rootFor(variant: Variant) -> MultiRoot {
         switch variant {
-            case .v1:   return .a(SourceRoot(items: sourceItemsA()))
-            case .v2:   return .b(SourceRoot(items: sourceItemsB()))
-            case .v3:   return .c(SourceRoot(items: sourceItemsC()))
+            case .v0:   return .a("Placeholder")
+            case .v1:   return .b(SourceRoot(items: sourceItemsA()))
+            case .v2:   return .c(SourceRoot(items: sourceItemsB()))
+            case .v3:   return .d(SourceRoot(items: sourceItemsC()))
         }
     }
     

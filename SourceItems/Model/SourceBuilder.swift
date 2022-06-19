@@ -14,7 +14,20 @@ protocol SourceList {
 }
 
 struct SourceRoot<Item: SourceItem> : SourceList {
-    let items       : [Item]
+    var items       : [Item]
+    
+    func filtered(matching term: String) -> Self {
+        guard !term.isEmpty else { return self }
+        var filteredRoot = self
+        
+        filteredRoot.items = items.compactMap { item in
+            let filtered = item.filtered(matching: term)
+            
+            return filtered.match ? filtered.fItem : nil
+        }
+
+        return filteredRoot
+    }
 }
 
 @resultBuilder

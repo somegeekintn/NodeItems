@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct SourceItemGroup<Item: SourceItem>: View {
-    @State private var isExpanded   = false
+    @State private var isExpanded = false
+    @Binding var selection: UUID?
 
     var item   : Item
 
@@ -17,22 +18,24 @@ struct SourceItemGroup<Item: SourceItem>: View {
             DisclosureGroup(
                 isExpanded: $isExpanded) {
                     ForEach(childItems) { childItem in
-                        SourceItemGroup<Item.Child>(item: childItem)
+                        SourceItemGroup<Item.Child>(selection: $selection, item: childItem)
                     }
                 } label: {
-                    SourceItemLink(item: item)
+                    SourceItemLink(selection: $selection, item: item)
                 }
+                
         }
         else {
-            SourceItemLink(item: item)
+            SourceItemLink(selection: $selection, item: item)
         }
     }
 }
 
 struct SourceItemGroup_Previews: PreviewProvider {
+    @State static var selection : UUID?
     static var sampleItem = SampleModel().sourceItemsA()[0]
 
     static var previews: some View {
-        SourceItemGroup(item: sampleItem)
+        SourceItemGroup(selection: $selection, item: sampleItem)
     }
 }
