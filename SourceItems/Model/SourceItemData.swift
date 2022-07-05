@@ -23,23 +23,28 @@ extension SourceItemData {
     var headerTitle     : String { title }
     var imageDesc       : SourceImageDesc { .symbol() }
 
-    var header          : some View { Text("Unimplemented \(sourceType).header") }
-    var content         : some View { Text("Unimplemented \(sourceType).content") }
-    var sourceType      : String { "\(type(of: self))" }
-   
-    func with<Item: SourceItem>(@SourceBuilder children: () -> SourceRoot<Item>) -> (data: Self, items: [Item]) {
-        return (self, children().items)
+    var header          : some View { get { EmptyView() } }
+    var content         : some View { get { EmptyView() } }
+    
+    func with<Item: SourceItem>(@SourceBuilder children: () -> SourceItemVal<SourceItemDataNone, Item>) -> (data: Self, items: [Item]) {
+        return (self, children().children)
     }
 }
 
 enum SourceImageDesc {
     case icon(nsImage: NSImage)
     case symbol(systemName: String = "questionmark.circle", color: Color = .primary)
+    
+    func withColor(_ color: Color) -> Self {
+        switch self {
+            case .icon:                 return self
+            case let .symbol(name, _):  return .symbol(systemName: name, color: color)
+        }
+    }
 }
 
-extension Never: SourceItemData {
-    var headerTitle     : String { fatalError () }
-    var imageDesc       : SourceImageDesc { SourceImageDesc.symbol(systemName: "exclamationmark.octagon", color: .red) }
-    var header          : some View { Text("Error: Never SourceItemData type cannot provide header") }
-    var content         : some View { Text("Error: Never SourceItemData type cannot provide content") }
+struct SourceItemDataNone: SourceItemData {
+    static let none     = SourceItemDataNone()
+    
+    var title           : String { "" }
 }

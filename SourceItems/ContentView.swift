@@ -29,19 +29,19 @@ struct ContentView: View {
                     
                     Divider()
 
-                    switch model.filteredRoot {
+                    switch model.base {
                         case let .a(_, title):
                             Text(title)
                         case let .b(_, root):
-                            ForEach(root.items) {
+                            ForEach(root.children) {
                                 SourceItemGroup(selection: $model.selection, item: $0)
                             }
                         case let .c(_, root):
-                            ForEach(root.items) {
+                            ForEach(root.children) {
                                 SourceItemGroup(selection: $model.selection, item: $0)
                             }
                         case let .d(_, root):
-                            ForEach(root.items) {
+                            ForEach(root.children) {
                                 SourceItemGroup(selection: $model.selection, item: $0)
                             }
                     }

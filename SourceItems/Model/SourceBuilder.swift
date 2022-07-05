@@ -7,29 +7,6 @@
 
 import Foundation
 
-protocol SourceList {
-    associatedtype Item    : SourceItem
-
-    var items       : [Item] { get }
-}
-
-struct SourceRoot<Item: SourceItem> : SourceList {
-    var items       : [Item]
-    
-    func filtered(matching term: String) -> Self {
-        guard !term.isEmpty else { return self }
-        var filteredRoot = self
-        
-        filteredRoot.items = items.compactMap { item in
-            let filtered = item.filtered(matching: term)
-            
-            return filtered.match ? filtered.fItem : nil
-        }
-
-        return filteredRoot
-    }
-}
-
 @resultBuilder
 struct SourceBuilder {
     static func buildBlock<Item: SourceItem>(_ items: [Item]...) -> [Item] {
@@ -40,8 +17,8 @@ struct SourceBuilder {
         []
     }
 
-    static func buildExpression<Data: SourceItemData>(_ data: Data) -> [SourceItemVal<Data, Never>] {
-        [SourceItemVal<Data, Never>(data: data)]
+    static func buildExpression<Data: SourceItemData>(_ data: Data) -> [SourceItemVal<Data, SourceItemNone>] {
+        [SourceItemVal<Data, SourceItemNone>(data: data, children: [])]
     }
 
     static func buildExpression<Item: SourceItem>(_ item: Item) -> [Item] {
@@ -61,8 +38,8 @@ struct SourceBuilder {
     }
 
     // Single SourceContainer
-    static func buildExpression<Item: SourceItem>(_ container: SourceRoot<Item>) -> [Item] {
-        container.items
+    static func buildExpression<Item: SourceItem>(_ container: SourceItemVal<SourceItemDataNone, Item>) -> [Item] {
+        container.children
     }
 
     static func buildArray<Item: SourceItem>(_ components: [[Item]]) -> [Item] {
@@ -77,8 +54,8 @@ struct SourceBuilder {
         component
     }
     
-    static func buildFinalResult<Item: SourceItem>(_ items: [Item]) -> SourceRoot<Item> {
-        return SourceRoot<Item>(items: items)
+    static func buildFinalResult<Item: SourceItem>(_ items: [Item]) -> SourceItemVal<SourceItemDataNone, Item> {
+        return SourceItemVal(data: .none, children: items)
     }
 }
 
@@ -104,10 +81,10 @@ struct TestBuilder {
             // empty array of children. How to match and how to test since this
             // could be any number in any order? Furthermore, the return type
             // signature cannot be variable.
-            
+
             // We could have something like withEmpty to indicate this item is capable
             // of having children, but does not currently have them.
-            
+
             // Finally how will all of this work once filtering is added in? I guess
             // the type will not have to change and we can just empty the arrays as
             // needed and no disclosure would be shown
@@ -118,8 +95,8 @@ struct TestBuilder {
         }
     }
     
-    func testBuild<Item: SourceItem>(_ msg: String, @SourceBuilder children: () -> SourceRoot<Item>) {
-        print("\(msg): \(children().items)")
+    func testBuild<Item: SourceItem>(_ msg: String, @SourceBuilder children: () -> SourceItemVal<SourceItemDataNone, Item>) {
+        print("\(msg): \(children().children)")
     }
 }
 

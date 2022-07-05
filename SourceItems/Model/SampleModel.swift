@@ -27,16 +27,16 @@ enum OneOf<A, B, C, D>: Identifiable {
 // This would be broken out in a "real world" situation
 
 class SampleModel: ObservableObject {
-    typealias   IntItem             = SourceItemVal<Int, Never>
-    typealias   StringItem          = SourceItemVal<String, Never>
+    typealias   IntItem             = SourceItemVal<Int, SourceItemNone>
+    typealias   StringItem          = SourceItemVal<String, SourceItemNone>
     typealias   IntString           = SourceItemVal<Int, StringItem>
     typealias   StringInt           = SourceItemVal<String, IntItem>
     typealias   SymbolStringInt     = SourceItemVal<SymbolSource, StringInt>
     typealias   MultiRoot           = OneOf<
                                         String,
-                                        SourceRoot<SymbolStringInt>,
-                                        SourceRoot<IntString>,
-                                        SourceRoot<StringInt>>
+                                        SourceItemVal<SourceItemDataNone, SymbolStringInt>,
+                                        SourceItemVal<SourceItemDataNone, IntString>,
+                                        SourceItemVal<SourceItemDataNone, StringInt>>
 
     enum Variant: Int, CaseIterable, Identifiable {
         case v0
@@ -55,8 +55,8 @@ class SampleModel: ObservableObject {
         }
     }
     
-    @Published var variant      = Variant.v0 { didSet { multiRoot = rootFor(variant: variant) } }
-    @Published var filter       = ""
+    @Published var variant      = Variant.v0 { didSet { rebuildBase() } }
+    @Published var filter       = "" { didSet { applyFilter() } }
 
     // Note: sometimes filtering clears the selection and sometimes not. Sometimes
     // the selection remains even if the items has been filtered out. <thinking face>
@@ -67,30 +67,43 @@ class SampleModel: ObservableObject {
         }
     }
     
-    // Added placeholder variant because we don't want multiRoot to be a computed value
-    // Instead we want the filtered items to be the identified the same as the unfiltered
-    // ones.
-    var multiRoot           : MultiRoot = MultiRoot.a("Placeholder")
-    var filteredRoot        : MultiRoot {
-        switch multiRoot {
-            case .a:                return multiRoot
-            case let .b(_, root):   return .b(id: multiRoot.id, root.filtered(matching: filter))
-            case let .c(_, root):   return .c(id: multiRoot.id, root.filtered(matching: filter))
-            case let .d(_, root):   return .d(id: multiRoot.id, root.filtered(matching: filter))
-        }
-    }
+    var base            : MultiRoot = MultiRoot.a("Placeholder")
     
     init() {
         variant = Variant.v1
+        
+        self.rebuildBase()
     }
     
-    func rootFor(variant: Variant) -> MultiRoot {
-        switch variant {
-            case .v0:   return .a("Placeholder")
-            case .v1:   return .b(SourceRoot(items: sourceItemsA()))
-            case .v2:   return .c(SourceRoot(items: sourceItemsB()))
-            case .v3:   return .d(SourceRoot(items: sourceItemsC()))
+    func applyFilter() {
+        switch base {
+            case .a:                break
+            case let .b(_, item):   item.applyFilter(matching: filter)
+            case let .c(_, item):   item.applyFilter(matching: filter)
+            case let .d(_, item):   item.applyFilter(matching: filter)
         }
+    }
+    
+    func rebuildBase() {
+        var baseID  : UUID
+        
+        // Preserve identifier if style is not changing
+        switch (variant, base) {
+            case (.v0, let .a(id, _)):  baseID = id;
+            case (.v1, let .b(id, _)):  baseID = id;
+            case (.v2, let .c(id, _)):  baseID = id;
+            case (.v3, let .d(id, _)):  baseID = id;
+            default:                    baseID = UUID()
+        }
+        
+        switch variant {
+            case .v0:   base = .a(id: baseID, "Placeholder")
+            case .v1:   base = .b(id: baseID, SourceItemVal(data: .none, children: sourceItemsA()))
+            case .v2:   base = .c(id: baseID, SourceItemVal(data: .none, children: sourceItemsB()))
+            case .v3:   base = .d(id: baseID, SourceItemVal(data: .none, children: sourceItemsC()))
+        }
+        
+        applyFilter()
     }
     
     func sourceItemsA() -> [SymbolStringInt] {

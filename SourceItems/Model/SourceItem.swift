@@ -7,57 +7,62 @@
 
 import SwiftUI
 
-protocol SourceItem: Identifiable {
+protocol SourceItem: Identifiable, ObservableObject {
     associatedtype Model    : SourceItemData
     associatedtype Child    : SourceItem
 
     var id              : UUID { get }
     var data            : Model { get }
-    var children        : [Child]? { get set }
-
-    @discardableResult func filtered(matching term: String) -> (fItem: Self, match: Bool)
+    var children        : [Child] { get set }
+    var visibleChildren : [Child] { get set }
+    var customImgDesc   : SourceImageDesc? { get }
 }
 
 extension SourceItem {
-    var customImgDesc   : SourceImageDesc? { nil }
-
     var title           : String { data.title }
     var headerTitle     : String { data.headerTitle }
     var header          : some View { data.header }
     var content         : some View { data.content }
     var imageDesc       : SourceImageDesc { customImgDesc ?? data.imageDesc }
+    var customImgDesc   : SourceImageDesc? { nil }
 
-    // A little different. Return self with filtered children and
-    // whether or not self or children contain a match.
-    func filtered(matching term: String) -> (fItem: Self, match: Bool) {
-        guard !term.isEmpty else { return (self, true) }
-        var filteredItem    = self
-        let match           = filteredItem.title.uppercased().contains(term.uppercased())
-        var childMatch      = false
+    func applyFilter(matching term: String) {
+        visibleChildren = children.filter { $0.applyingFilter(matching: term) }
+    }
 
-        if let srcChildren = self.children {
-            let fChildren = srcChildren.compactMap { child -> Self.Child? in
-                let filtered = child.filtered(matching: term)
-                
-                return filtered.match ? filtered.fItem : nil
-            }
-            
-            filteredItem.children = fChildren
-            childMatch = !fChildren.isEmpty
+    func applyingFilter(matching term: String) -> Bool {
+        var match           = true
+
+        if !term.isEmpty && match {
+            match = title.uppercased().contains(term.uppercased())
         }
-        
-        return (filteredItem, match || childMatch)
+
+        visibleChildren = children.filter { $0.applyingFilter(matching: term) }
+
+        return match || !visibleChildren.isEmpty
     }
 }
 
-struct SourceItemVal<Model: SourceItemData, Child: SourceItem>: SourceItem {
-    var id          = UUID()
-    var data        : Model
-    var children    : [Child]?
+class SourceItemVal<Model: SourceItemData, Child: SourceItem>: SourceItem {
+    @Published var visibleChildren  : [Child]
+    
+    var id              = UUID()
+    var data            : Model
+    var children        : [Child]
+    var customImgDesc   : SourceImageDesc?
+    
+    init(id: UUID = UUID(), data: Model, children: [Child] = [], customImgDesc: SourceImageDesc? = nil) {
+        self.id = id
+        self.data = data
+        self.children = children
+        self.visibleChildren = children
+        self.customImgDesc = customImgDesc
+    }
 }
 
-extension Never: SourceItem {
-    public var id       : UUID   { fatalError() }
-    public var data     : Never    { fatalError() }
-    public var children : [Never]? { get { fatalError() } set { } }
+class SourceItemNone: SourceItem {
+    var id              = UUID()
+    var data            = SourceItemDataNone()
+    var children        = [SourceItemNone]()
+    var visibleChildren = [SourceItemNone]()
 }
