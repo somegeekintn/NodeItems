@@ -34,25 +34,14 @@ struct ContentView: View {
                 
                 Divider()
 
-FilteredNodeView
-{
-    42
-    ("hello") {
-        "world"
-        27
-        (99) {
-            "ninety-nine"
-        }
-    }
-}
-//                Group {
-//                    if isFiltered {
-//                        FilteredNodeView() { model.items }
-//                    }
-//                    else {
-//                        NodeView { model.items }
-//                    }
-//                }
+                Group {
+                    if isFiltered {
+                        FilteredNodeView() { model.items }
+                    }
+                    else {
+                        NodeView { model.items }
+                    }
+                }
                 .frame(minWidth: 200)
                 .id(model.variant)
             }
