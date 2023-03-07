@@ -40,7 +40,7 @@ extension FilteredNodeView {
             List {
                 if !items.isEmpty {
                     ForEach(items.indices, id: \.self) { index in
-                        Item(node: items[index])
+                        FilteredNodeView.Item(node: items[index])
                     }
                 }
                 else {
@@ -59,21 +59,22 @@ extension FilteredNodeView {
         
         var body: some View {
             ForEach(items.indices, id: \.self) { index in
-                Item(node: items[index])
+                FilteredNodeView.Item(node: items[index])
             }
         }
     }
 
     struct Item<T: Node>: View {
         @ObservedObject var node    : FilteredNode<T>
-        @State var expanded         = false
         
         var body: some View {
             if !node.filtered {
-                NodeLabel(node, expanded: $expanded)
+                NodeLabel(node, expanded: $node.isExpanded) { deep in
+                    node.toggleExpanded(deep: deep)
+                }
                 
-                if let items = node.items, expanded {
-                    ItemList(items: items)
+                if let items = node.items, node.isExpanded {
+                    FilteredNodeView.ItemList(items: items)
                         .padding(.leading, 12.0)
                 }
             }

@@ -42,7 +42,7 @@ extension NodeView {
         
         var body: some View {
             ForEach(items.indices, id: \.self) { index in
-                Item(node: items[index])
+                NodeView.Item(node: items[index])
             }
         }
     }
@@ -53,10 +53,12 @@ extension NodeView {
         var node    : T
         
         var body: some View {
-            NodeLabel(node, expanded: $expanded)
+            NodeLabel(node, expanded: $expanded) { _ in // deep expansion unsupported
+                expanded.toggle()
+            }
             
             if let items = node.items, expanded {
-                ItemList(items: items)
+                NodeView.ItemList(items: items)
                     .padding(.leading, 12.0)
             }
         }

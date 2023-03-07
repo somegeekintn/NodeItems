@@ -27,8 +27,8 @@ extension Node {
         set { }
      }
 
-    func callAsFunction<Item: Node>(@NodeListBuilder items: () -> [Item]) -> NodeConnector<Self, Item> {
-        NodeConnector(self, items: items)
+    func callAsFunction<Item: Node>(@NodeListBuilder items: () -> [Item]) -> NodeLink<Self, Item> {
+        NodeLink(self, items: items)
     }
 //    
 //    // Check me
@@ -77,7 +77,7 @@ struct RootNode<Item: Node>: Node {
     }
 }
 
-struct NodeConnector<Base: Node, Item: Node>: Node {
+struct NodeLink<Base: Node, Item: Node>: Node {
     var base        : Base
     var items       : [Item]?
     var label       : Base.Tag { return base.label }
