@@ -42,7 +42,15 @@ struct NodeLabel<T: Node>: View {
             if node.items != nil { button }
             else { button.hidden() }
             
-            NavigationLink(destination: node.content, label: { node.label })
+            NavigationLink(
+                destination: { node.content },
+                label: {
+                    Label(
+                        title: { Text(node.title) },
+                        icon: { node.icon }
+                    )
+                }
+            )
         }
     }
 }

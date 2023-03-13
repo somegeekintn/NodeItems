@@ -9,20 +9,14 @@ import SwiftUI
 
 struct SFSymbol: Node {
     let name        : String
-    var titleLabel  : String { "SF Symbol: \(name)" }
+    var title       : String { "SF Symbol: \(name)" }
 
-    var label: some View {
-        Label(titleLabel, systemImage: name)
-    }
-    
+    var icon        : some View { Image(systemName: name) }
+
     var content: some View {
         VStack {
-            Text(titleLabel)
-            Image(systemName: name)
+            Text(title)
+            icon
         }
-    }
-    
-    func matchesFilterTerm(_ term: String) -> Bool {
-        titleLabel.contains(term)
     }
 }

@@ -32,7 +32,7 @@ extension FilteredNodeView {
     struct Root: View {
         @ObservedObject var node    : FilteredNode<T>
         
-        var visibleItems    : FilteredNode<T>.List { node.items.map { $0.filter { !$0.filtered} } ?? [] }
+        var visibleItems    : FilteredNode<T>.Children { node.items.map { $0.filter { !$0.filtered} } ?? [] }
 
         var body: some View {
             let items = visibleItems

@@ -11,35 +11,37 @@ import SwiftUI
     typealias P = Node
 
     enum OneOf<A: P, B: P>: P, CustomStringConvertible {
-        typealias List = [NodeListBuilder.OneOf<A.List.Element, B.List.Element>]
-
         case a(A)
         case b(B)
 
-        @ViewBuilder
-        var label     : some View {
+        var title       : String {
             switch self {
-                case .a(let node): node.label
-                case .b(let node): node.label
+                case .a(let node): return node.title
+                case .b(let node): return node.title
             }
         }
 
         @ViewBuilder
-        var content     : some View {
+        var icon        : some View {
+            switch self {
+                case .a(let node): node.icon
+                case .b(let node): node.icon
+            }
+        }
+
+        @ViewBuilder
+        var content : some View {
             switch self {
                 case .a(let node): node.content
                 case .b(let node): node.content
             }
         }
 
-        var items       : List? {
-            get {
-                switch self {
-                    case .a(let node): return node.items?.map { .a($0) }
-                    case .b(let node): return node.items?.map { .b($0) }
-                }
+        var items       : [NodeListBuilder.OneOf<A.Children.Element, B.Children.Element>]? {
+            switch self {
+                case .a(let node): return node.items?.map { .a($0) }
+                case .b(let node): return node.items?.map { .b($0) }
             }
-            set { }
         }
 
         var description : String {
@@ -52,65 +54,67 @@ import SwiftUI
             
             return "OneOf<A - \(A.self), B - \(B.self)>: \(valueDesc)"
         }
-        
-        func matchesFilterTerm(_ term: String) -> Bool {
-            switch self {
-                case .a(let node): return node.matchesFilterTerm(term)
-                case .b(let node): return node.matchesFilterTerm(term)
-            }
-        }
     }
 
-    static func buildBlock<C: P>(_ c: [C]) -> [C] {
+    static func buildPartialBlock<C: P>(first c: [C]) -> [C] {
         c
     }
-
-    static func buildBlock<C0: P, C1: P> (
-        _ c0: [C0], _ c1: [C1]) -> [OneOf<C0, C1>]
-    {
-        [buildEither(first: c0), buildEither(second: c1)].flatMap { $0 }
+    
+    // matching types
+    static func buildPartialBlock<C: P>(accumulated c0: [C], next c1: [C]) -> [C] {
+        c0 + c1
     }
 
-    static func buildBlock<C0: P, C1: P, C2: P> (
-        _ c0: [C0], _ c1: [C1], _ c2: [C2]) -> [OneOf<OneOf<C0, C1>, C2>]
-    {
-        [buildEither(first: buildBlock(c0, c1)), buildEither(second: c2)].flatMap { $0 }
-    }
-
-    static func buildBlock<C0: P, C1: P, C2: P, C3: P> (
-        _ c0: [C0], _ c1: [C1], _ c2: [C2], _ c3: [C3]) -> [OneOf<OneOf<C0, C1>, OneOf<C2, C3>>]
-    {
-        [buildEither(first: buildBlock(c0, c1)), buildEither(second: buildBlock(c2, c3))].flatMap { $0 }
-    }
-
-    static func buildBlock<C0: P, C1: P, C2: P, C3: P, C4: P> (
-        _ c0: [C0], _ c1: [C1], _ c2: [C2], _ c3: [C3], _ c4: [C4]) -> [OneOf<OneOf<OneOf<C0, C1>, OneOf<C2, C3>>, C4>]
-    {
-        [buildEither(first: buildBlock(c0, c1, c2, c3)), buildEither(second: c4)].flatMap { $0 }
-    }
-
-    static func buildBlock<C0: P, C1: P, C2: P, C3: P, C4: P, C5: P> (
-        _ c0: [C0], _ c1: [C1], _ c2: [C2], _ c3: [C3], _ c4: [C4], _ c5: [C5]) -> [OneOf<OneOf<OneOf<C0, C1>, OneOf<C2, C3>>, OneOf<C4, C5>>]
-    {
-        [buildEither(first: buildBlock(c0, c1, c2, c3)), buildEither(second: buildBlock(c4, c5))].flatMap { $0 }
-    }
-
-    static func buildBlock<C0: P, C1: P, C2: P, C3: P, C4: P, C5: P, C6: P> (
-        _ c0: [C0], _ c1: [C1], _ c2: [C2], _ c3: [C3], _ c4: [C4], _ c5: [C5], _ c6: [C6]) -> [OneOf<OneOf<OneOf<C0, C1>, OneOf<C2, C3>>, OneOf<OneOf<C4, C5>, C6>>]
-    {
-        [buildEither(first: buildBlock(c0, c1, c2, c3)), buildEither(second: buildBlock(c4, c5, c6))].flatMap { $0 }
-    }
-
-    static func buildBlock<C0: P, C1: P, C2: P, C3: P, C4: P, C5: P, C6: P, C7: P> (
-        _ c0: [C0], _ c1: [C1], _ c2: [C2], _ c3: [C3], _ c4: [C4], _ c5: [C5], _ c6: [C6], _ c7: [C7]) -> [OneOf<OneOf<OneOf<C0, C1>, OneOf<C2, C3>>, OneOf<OneOf<C4, C5>, OneOf<C6, C7>>>]
-    {
-        [buildEither(first: buildBlock(c0, c1, c2, c3)), buildEither(second: buildBlock(c4, c5, c6, c7))].flatMap { $0 }
+    // matches A of OneOf<A, B>
+    static func buildPartialBlock<A: P, B: P>(accumulated ab: [OneOf<A, B>], next a: [A]) -> [OneOf<A, B>] {
+        ab + a.map { .a($0) }
     }
     
-//    static func buildBlock<C: Node>(_ c: [C]...) -> [C] {
-//        c.flatMap { $0 }
-//    }
-//
+    // matches B of OneOf<A, B>
+    static func buildPartialBlock<A: P, B: P>(accumulated ab: [OneOf<A, B>], next b: [B]) -> [OneOf<A, B>] {
+        ab + b.map { .b($0) }
+    }
+    
+    // matches A of OneOf<OneOf<A, B>, C>
+    static func buildPartialBlock<A: P, B: P, C: P>(accumulated abc: [OneOf<OneOf<A, B>, C>], next a: [A]) -> [OneOf<OneOf<A, B>, C>] {
+        buildPartialBlock(accumulated: [] as [OneOf<A, B>], next: a).map { .a($0) }
+    }
+    
+    // matches B of OneOf<OneOf<A, B>, C>
+    static func buildPartialBlock<A: P, B: P, C: P>(accumulated abc: [OneOf<OneOf<A, B>, C>], next b: [B]) -> [OneOf<OneOf<A, B>, C>] {
+        buildPartialBlock(accumulated: [] as [OneOf<A, B>], next: b).map { .a($0) }
+    }
+    
+    // matches C of OneOf<OneOf<A, B>, C>
+    static func buildPartialBlock<A: P, B: P, C: P>(accumulated abc: [OneOf<OneOf<A, B>, C>], next c: [C]) -> [OneOf<OneOf<A, B>, C>] {
+        abc + c.map { .b($0) }
+    }
+    
+    // matches A of OneOf<OneOf<A, B>, OneOf<C, D>>
+    static func buildPartialBlock<A: P, B: P, C: P, D: P>(accumulated abcd: [OneOf<OneOf<A, B>, OneOf<C, D>>], next a: [A]) -> [OneOf<OneOf<A, B>, OneOf<C, D>>] {
+        buildPartialBlock(accumulated: [] as [OneOf<A, B>], next: a).map { .a($0) }
+    }
+    
+    // matches B of OneOf<OneOf<A, B>, OneOf<C, D>>
+    static func buildPartialBlock<A: P, B: P, C: P, D: P>(accumulated abcd: [OneOf<OneOf<A, B>, OneOf<C, D>>], next b: [B]) -> [OneOf<OneOf<A, B>, OneOf<C, D>>] {
+        buildPartialBlock(accumulated: [] as [OneOf<A, B>], next: b).map { .a($0) }
+    }
+
+    // matches C of OneOf<OneOf<A, B>, OneOf<C, D>>
+    static func buildPartialBlock<A: P, B: P, C: P, D: P>(accumulated abcd: [OneOf<OneOf<A, B>, OneOf<C, D>>], next c: [C]) -> [OneOf<OneOf<A, B>, OneOf<C, D>>] {
+        buildPartialBlock(accumulated: [] as [OneOf<C, D>], next: c).map { .b($0) }
+    }
+
+    // matches D of OneOf<OneOf<A, B>, OneOf<C, D>>
+    static func buildPartialBlock<A: P, B: P, C: P, D: P>(accumulated abcd: [OneOf<OneOf<A, B>, OneOf<C, D>>], next d: [D]) -> [OneOf<OneOf<A, B>, OneOf<C, D>>] {
+        buildPartialBlock(accumulated: [] as [OneOf<C, D>], next: d).map { .b($0) }
+    }
+
+    // non-matching types
+    static func buildPartialBlock<C0: P, C1: P>(accumulated c0: [C0], next c1: [C1]) -> [OneOf<C0, C1>] {
+        c0.map({ OneOf<C0, C1>.a($0) }) + c1.map({ OneOf<C0, C1>.b($0) })
+    }
+
     // Same type buildBlocks. This works but buildBlock<C: Node>(_ c: [C]...) -> [C] confuses the compiler
 
     static func buildBlock<C0: Node> (_ c0: [C0], _ c1: [C0]) -> [C0] {
@@ -136,17 +140,16 @@ import SwiftUI
 //    static func buildArray<C: Node>(_ c: [[C]]) -> [C] {
 //        c.flatMap { $0 }
 //    }
-//
+
     static func buildExpression<N: Node>(_ node: N) -> [N] {
-        [node]
+        return [node]
     }
 
     static func buildExpression<NL: NodeList>(_ nodeList: NL)  -> [NL.Element] {
-        Array(nodeList)
+        return Array(nodeList)
     }
-    
-    static func buildExpression<NS: NodeSource>(_ nodeSource: NS) -> [NS.List.Element] {
-        nodeSource.items.map({ buildExpression($0) }) ?? []
+
+    static func buildExpression<NS: NodeSource>(_ nodeSource: NS) -> [NS.Children.Element] {
+        return nodeSource.items.map({ buildExpression($0) }) ?? []
     }
 }
-

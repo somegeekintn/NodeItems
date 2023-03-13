@@ -9,13 +9,14 @@ import SwiftUI
 import Combine
 
 class FilteredNode<T: Node>: Node, ObservableObject {
-    typealias FilteredList = [FilteredNode<T.List.Element>]
+    typealias FilteredList = [FilteredNode<T.Children.Element>]
     
     @Published var filtered : Bool
     @Published var isExpanded = false
 
     var wrappedNode : T
-    var label       : some View { wrappedNode.label }
+    var title       : String { wrappedNode.title }
+    var icon        : some View { wrappedNode.icon }
     var content     : some View { wrappedNode.content }
     var items       : FilteredList?
     var children    : FilteredList { items ?? [] }
@@ -37,16 +38,12 @@ class FilteredNode<T: Node>: Node, ObservableObject {
         }
     }
 
-    func matchesFilterTerm(_ term: String) -> Bool {
-        wrappedNode.matchesFilterTerm(term)
-    }
-    
     @discardableResult
     func applyFilter(_ term: String) -> Bool {
         let itemMatch = children.reduce(false) { result, node in
             node.applyFilter(term) || result    // deliberately not short circuiting here
         }
-        let nodeMatch = term.isEmpty || itemMatch || wrappedNode.matchesFilterTerm(term)
+        let nodeMatch = term.isEmpty || itemMatch || matchesFilterTerm(term)
         
         filtered = !nodeMatch
         
@@ -59,4 +56,3 @@ extension NodeList {
         self.map { FilteredNode($0) }
     }
 }
-

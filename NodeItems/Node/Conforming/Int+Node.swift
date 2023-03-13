@@ -8,17 +8,8 @@
 import SwiftUI
 
 extension Int: Node {
-    var titleLabel  : String { "Int: \(self)" }
+    var title       : String { "Int: \(self)" }
 
-    var label: some View {
-        Label(titleLabel, systemImage: "number.circle")
-    }
-    
-    var content: some View {
-        Text(titleLabel)
-    }
-    
-    func matchesFilterTerm(_ term: String) -> Bool {
-        titleLabel.contains(term)
-    }
+    var icon        : some View { Image(systemName: "number.circle") }
+    var content     : some View { Text(title) }
 }
